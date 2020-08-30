@@ -3,7 +3,7 @@ This repository contains the scripts for the paper Pronounced sequence specifici
 
 ## Components of the analysis
 
-###Scripts
+### Scripts
 - Python script to quantitate methylation by hexamer (call_hexamers.py).
 - Python script to sort methylation according to CGI location (classify_CGI.py).
 - Python script to merge results and obtain summary tables (summarize.py).
