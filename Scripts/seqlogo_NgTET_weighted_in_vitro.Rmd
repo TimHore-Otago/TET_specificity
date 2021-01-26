@@ -1,0 +1,260 @@
+---
+title: "NgTET in vitro"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Notice that the seqLogo library is from the bioconductor package. First install bioconductor, using the commend install.packages("BiocManager"). Then install the seqLogo package using BiocManager::install(c("seqLogo")). Other packages will be installed automatically on request in rstudio if not present already.
+
+```{r}
+library(readxl)
+library(tidyr)
+library(purrr)
+library(dplyr)
+library(seqLogo)
+options(digits=12)
+```
+
+```{r}
+filename <-"../Datasets/nTet-CpN-FM-Compilation-Forward_kinetics.xlsx"
+sheet <- "all"
+range1 <- "E26:IY34"
+range2 <- "E82:IY83"
+range3 <- "E85:IY86"
+name <- "NgTET"
+```
+
+```{r}
+create_df <- function (filename, sheet, range1, range2, range3,name)
+{
+  options(digits=10)
+  TET <- read_excel(filename, sheet = sheet, range = range1) %>% map_df(rev)
+  names(TET)<-paste("seq",1:255)
+  TET_v1 <- read_excel(filename, sheet = sheet, range = range2,col_types="text")
+  names(TET_v1)<-paste("seq",1:255)
+  TET_v2 <- read_excel(filename, sheet = sheet, range = range3,col_types="text")  
+  names(TET_v2)<-paste("seq",1:255)
+  TET_all1 <- rbind(TET,TET_v1,TET_v2)
+  TET_all2 <- as.data.frame(t(TET_all1))
+}
+```
+
+```{r}
+shortlogo <- function(model_simple) {
+  mycoeff <- coef(summary(model_simple))
+  V3_A <-1 
+  V3_C <-exp(mycoeff["V3C","Estimate"])
+  V3_G <-exp(mycoeff["V3G","Estimate"])
+  V3_T <-exp(mycoeff["V3T","Estimate"])
+  unV3 <-c(V3_A,V3_C,V3_G, V3_T)
+  fact <- sum(c(V3_A,V3_C,V3_G, V3_T))
+  myV3 <- unV3/fact
+  #
+  myV4 <- c(0.0,1.0,0.0,0.0)
+  #
+  V5_A <-1 
+  V5_C <-exp(mycoeff["V5C","Estimate"])
+  V5_G <-exp(mycoeff["V5G","Estimate"])
+  V5_T <-exp(mycoeff["V5T","Estimate"])
+  unV5 <-c(V5_A,V5_C,V5_G, V5_T)
+  fact <- sum(c(V5_A,V5_C,V5_G, V5_T))
+  myV5 <- unV5/fact
+  #
+  V6_A <-1 
+  V6_C <-exp(mycoeff["V6C","Estimate"])
+  V6_G <-exp(mycoeff["V6G","Estimate"])
+  V6_T <-exp(mycoeff["V6T","Estimate"])
+  unV6 <-c(V6_A,V6_C,V6_G, V6_T)
+  fact <- sum(c(V6_A,V6_C,V6_G, V6_T))
+  myV6 <- unV6/fact
+  logo_input=data.frame(myV3,myV4,myV5,myV6)
+  p <- makePWM(logo_input)
+  seqLogo(p, ic.scale=FALSE)
+}
+```
+
+```{r}
+longlogo <-function(model_complex_sample) 
+{
+  mycoeff <- coef(summary(model_complex_sample))
+  #
+  V2_A <-1 
+  V2_C <-exp(mycoeff["V2C","Estimate"])
+  V2_G <-exp(mycoeff["V2G","Estimate"])
+  V2_T <-exp(mycoeff["V2T","Estimate"])
+  unV2 <-c(V2_A,V2_C,V2_G, V2_T)
+  fact <- sum(c(V2_A,V2_C,V2_G, V2_T))
+  myV2 <- unV2/fact
+  #
+  V3_A <-1 
+  V3_C <-exp(mycoeff["V3C","Estimate"])
+  V3_G <-exp(mycoeff["V3G","Estimate"])
+  V3_T <-exp(mycoeff["V3T","Estimate"])
+  unV3 <-c(V3_A,V3_C,V3_G, V3_T)
+  fact <- sum(c(V3_A,V3_C,V3_G, V3_T))
+  myV3 <- unV3/fact
+  #
+  myV4 <- c(0.0,1.0,0.0,0.0)
+  #
+  V5_A <-1 
+  V5_C <-exp(mycoeff["V5C","Estimate"])
+  V5_G <-exp(mycoeff["V5G","Estimate"])
+  V5_T <-exp(mycoeff["V5T","Estimate"])
+  unV5 <-c(V5_A,V5_C,V5_G, V5_T)
+  fact <- sum(c(V5_A,V5_C,V5_G, V5_T))
+  myV5 <- unV5/fact
+  #
+  V6_A <-1 
+  V6_C <-exp(mycoeff["V6C","Estimate"])
+  V6_G <-exp(mycoeff["V6G","Estimate"])
+  V6_T <-exp(mycoeff["V6T","Estimate"])
+  unV6 <-c(V6_A,V6_C,V6_G, V6_T)
+  fact <- sum(c(V6_A,V6_C,V6_G, V6_T))
+  myV6 <- unV6/fact
+  #
+  V7_A <-1 
+  V7_C <-exp(mycoeff["V7C","Estimate"])
+  V7_G <-exp(mycoeff["V7G","Estimate"])
+  V7_T <-exp(mycoeff["V7T","Estimate"])
+  unV7 <-c(V7_A,V7_C,V7_G, V7_T)
+  fact <- sum(c(V7_A,V7_C,V7_G, V7_T))
+  myV7 <- unV7/fact
+  logo_input=data.frame(myV2,myV3,myV4,myV5,myV6,myV7)
+  p <- makePWM(logo_input)
+  seqLogo(p, ic.scale=FALSE)
+}
+```
+
+<h2>read in the data</h2>
+```{r}
+TET=create_df(filename, sheet, range1, range2, range3,name)
+TET$V9 <-as.numeric(as.character(TET$V9))
+TET$V10 <-as.numeric(as.character(TET$V10))
+```
+
+<h2>Compare the two experimental repeats</h2>
+
+```{r}
+options(digits=8)
+plot(TET$V9,TET$V10,main="velocity TET", xlab="first repeat",ylab="second repeat")
+```
+<h2> Remove negative or extremely low velocities</h2>
+
+```{r}
+TET_clean <- TET %>% drop_na()  %>% filter(V9>exp(-12)) %>% filter(V10>exp(-12))
+TET_clean <- TET_clean %>% mutate(logV9=log(V9), logV10=log(V10))
+TET_clean <- TET_clean %>% mutate(avlogV=(logV9+logV10)/2)
+TET_clean <- TET_clean %>% mutate(difflogV=abs(logV9-logV10))
+head(TET_clean)
+```
+
+<h2>Compare log velocities</h2>
+
+```{r}
+plot(TET_clean$logV9,TET_clean$logV10,main="log velocity TET", xlab="first repeat",ylab="second repeat")
+abline(a=0,b=1)
+```
+Notice that the error here looks like it could well be random
+
+```{r}
+cor(TET_clean$logV9,TET_clean$logV10)
+```
+
+<h2>Build a model with three contributing bases and weighting (and C)</h2> 
+
+```{r}
+model_simple <-lm(avlogV~V3+V5+V6,data=TET_clean,weights=1/(difflogV+0.1))
+summary(model_simple)
+```
+```{r}
+shortlogo(model_simple)
+```
+
+```{r}
+plot(TET_clean$avlogV,as.vector(model_simple$fitted.values),
+     main="TET model with 3 positions",
+     xlab="log velocity(experiment)",
+     ylab="log velocity(prediction)"
+     )
+abline(a=0,b=1)
+```
+
+```{r}
+cor(TET_clean$avlogV,as.vector(model_simple$fitted.values))
+```
+
+<h2> Create a model with five contributing bases and weighting </h2>
+
+```{r}
+model_complex <-lm(avlogV~V2+V3+V5+V6+V7,data=TET_clean, weights=1/(difflogV+0.1))
+summary(model_complex)
+```
+```{r}
+longlogo(model_complex)
+```
+
+
+```{r}
+plot(TET_clean$avlogV,as.vector(model_complex$fitted.values),
+     main="TET model with 5 positions",
+     xlab="log velocity(experiment)",
+     ylab="log velocity(prediction)")
+abline(a=0,b=1)
+```
+
+```{r}
+cor(TET_clean$avlogV,as.vector(model_complex$fitted.values))
+```
+
+<h2> Create a model with five contributing bases and weighting, half the data for model </h2>
+
+TET_clean_2a will be used to generate the model
+TET_clean_2b will be used to check the model
+
+```{r}
+ind <- sample(c(TRUE, FALSE), nrow(TET_clean), replace=TRUE, prob=c(0.5, 0.5))
+TET_clean_2a<-TET_clean[ind,]
+TET_clean_2b<-TET_clean[!ind,]
+```
+
+Now build the model with 5 positions and weighting, based on TET_clean_2a
+
+```{r}
+model_complex_sample <-lm(avlogV~V2+V3+V5+V6+V7,data=TET_clean_2a, weights=1/(difflogV+0.1))
+summary(model_complex_sample)
+```
+
+```{r}
+longlogo(model_complex_sample)
+```
+
+check how well the model fits the data that have been used for its calculation
+
+```{r}
+plot(TET_clean_2a$avlogV,predict(model_complex_sample,TET_clean_2a),
+     main="TET model with 5 positions (fitting)",
+     xlab="log velocity(experiment)",
+     ylab="log velocity(prediction)")
+abline(a=0,b=1)
+```
+```{r}
+cor(TET_clean_2a$avlogV,predict(model_complex_sample,TET_clean_2a))
+```
+
+check the quality of the model with the other half of the data
+
+```{r}
+plot(TET_clean_2b$avlogV,predict(model_complex_sample,TET_clean_2b),
+     main="TET model with 5 positions (predictions)",
+     xlab="log velocity(experiment)",
+     ylab="log velocity(prediction)")
+abline(a=0,b=1)
+```
+```{r}
+cor(TET_clean_2b$avlogV,predict(model_complex_sample,TET_clean_2b))
+```
+
+i.e. the correlation is only slightly lower when predicting velocities not used for generation of the model (correation 0.73 versus 0.83). Hence, the model has at most a slight fitting bias.
