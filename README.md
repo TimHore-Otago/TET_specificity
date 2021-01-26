@@ -12,3 +12,5 @@ This repository contains the scripts and datasets for the paper Pronounced seque
 ### Datasets
 - CpG Illingworth bed file converted to GRCm38 (CpG_Il_mm10.bed).
 - Demethylation velocity table (Slope_summary.txt).
+
+Last update: 12:57 26/01/2021 EST
